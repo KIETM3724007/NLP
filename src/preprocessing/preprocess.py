@@ -2,13 +2,17 @@ import re
 import nltk
 
 def split_sentences(text):
+    try:
+        nltk.data.find("tokenizers/punkt")
+    except LookupError:
+        nltk.download("punkt")
+        nltk.download("punkt_tab")
     return nltk.sent_tokenize(" ".join(text) if isinstance(text, list) else text)
 
 def align_abstract_to_sections(sections, abstract_sents):
     aligned = [[] for _ in sections]
 
     for sent in abstract_sents:
-        section_text="".join(sections[i])
         idx = min(range(len(sections)), key=lambda i: abs(len(sections[i]) - len(sent)))
         aligned[idx].append(sent)
 

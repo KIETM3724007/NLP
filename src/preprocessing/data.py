@@ -39,11 +39,15 @@ def json_to_sample(j):
         target=j["abstract_section"]
     )
 
-def build_pts_samples(item):
-    sections = "".join(item["sections"])
-    names = item["section_names"]
-    abstract = item["abstract_text"]
+def build_pts_samples(article: ArticleSample):
+    sections = [
+        " ".join(s) if isinstance(s, list) else s
+        for s in article.sections
+    ] 
+    names = article.section_names
+    abstract = article.summary                # List[str]
 
+    # abstract -> list câu
     abstract_sents = split_sentences(abstract)
 
     aligned = align_abstract_to_sections(sections, abstract_sents)
@@ -51,7 +55,7 @@ def build_pts_samples(item):
     samples = []
     for i, sec in enumerate(sections):
         samples.append({
-            "article_id": item["article_id"],
+            "article_id": article.id,
             "section_name": names[i],
             "section_text": sec,
             "abstract_section": aligned[i],

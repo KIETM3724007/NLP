@@ -6,17 +6,29 @@ from rouge_score import rouge_scorer
 from src.run_pts import merge_section_summaries
 
 def main():
+
     path = "data/processed/output.txt"
+
+    # 1. Đọc article
     articles = [parse_item(x) for x in read_jsonl(path)]
-    sections = [json_to_sample(build_pts_samples(art)) for art in articles]
 
-    first_article=articles[0]
-    first_sections=json_to_sample(build_pts_samples(first_article))
-    pred_sections=[]
-    for s in first_sections:
-        pred_sections.append(summarize_article(s))
+    # 2. Lấy article đầu tiên (test trước cho an toàn)
+    first_article = articles[0]
 
-    first_article.pred_summary=merge_section_summaries(pred_sections)
+    # 3. Build PTS samples (list[dict])
+    pts_dicts = build_pts_samples(first_article)
+
+    # 4. Chuyển sang PTSSample
+    pts_samples = [json_to_sample(d) for d in pts_dicts]
+
+    # 5. Tóm tắt từng section
+    pred_sections = []
+    for s in pts_samples:
+        sec_summary = summarize_article(s.source)
+        pred_sections.append((s.section_idx, sec_summary))
+
+    # 6. Gộp thành abstract toàn cục
+    first_article.pred_summary = merge_section_summaries(pred_sections)
 
 if __name__ == "__main__":
     main() 
