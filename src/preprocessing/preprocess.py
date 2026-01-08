@@ -1,4 +1,19 @@
 import re
+import nltk
+
+def split_sentences(text):
+    return nltk.sent_tokenize(" ".join(text) if isinstance(text, list) else text)
+
+def align_abstract_to_sections(sections, abstract_sents):
+    aligned = [[] for _ in sections]
+
+    for sent in abstract_sents:
+        section_text="".join(sections[i])
+        idx = min(range(len(sections)), key=lambda i: abs(len(sections[i]) - len(sent)))
+        aligned[idx].append(sent)
+
+    return [" ".join(s) for s in aligned]
+
 
 def clean_article(text: str) -> str:
     """Làm sạch LaTeX và citation trong article."""

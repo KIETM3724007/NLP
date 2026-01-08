@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from src.preprocessing.preprocess import split_sentences, align_abstract_to_sections
 
 @dataclass
 class ArticleSample:
@@ -39,7 +40,7 @@ def json_to_sample(j):
     )
 
 def build_pts_samples(item):
-    sections = item["sections"]
+    sections = "".join(item["sections"])
     names = item["section_names"]
     abstract = item["abstract_text"]
 
